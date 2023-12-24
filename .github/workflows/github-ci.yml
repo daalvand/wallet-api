@@ -24,13 +24,13 @@ jobs:
         with:
           context: "{{defaultContext}}"
           push: ${{ github.event_name != 'pull_request' }}
-          tags: daalvand/nordic_car:latest
+          tags: daalvand/wallet_api:latest
 
   run-tests:
     needs: build-and-push
     runs-on: ubuntu-latest
     container:
-      image: daalvand/nordic_car:latest
+      image: daalvand/wallet_api:latest
     steps:
       - name: install dependencies
         run: /usr/local/bin/composer install

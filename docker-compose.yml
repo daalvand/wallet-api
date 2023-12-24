@@ -1,7 +1,7 @@
 version: '3'
 services:
     db:
-        container_name: nordic_car_db
+        container_name: wallet_api_db
         image: mysql:8.2.0
         ports:
             - "${MYSQL_PORT:-8001}:3306"
@@ -13,20 +13,20 @@ services:
         volumes:
             - ./docker/db:/var/lib/mysql:rw
         networks:
-            - nordic_car_network
+            - wallet_api_network
 
     app:
-        container_name: nordic_car_app
-        image: daalvand/nordic_car:latest
+        container_name: wallet_api_app
+        image: daalvand/wallet_api:latest
         volumes:
             - .:/var/www/html
         depends_on:
             - db
         networks:
-            - nordic_car_network
+            - wallet_api_network
 
     nginx:
-        container_name: nordic_car_nginx
+        container_name: wallet_api_nginx
         image: nginx:1.25-alpine
         ports:
             - "${SERVER_PORT:-8000}:80"
@@ -36,8 +36,8 @@ services:
         depends_on:
             - app
         networks:
-            - nordic_car_network
+            - wallet_api_network
 
 networks:
-    nordic_car_network:
+    wallet_api_network:
         driver: bridge
