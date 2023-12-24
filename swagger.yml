@@ -1,0 +1,51 @@
+swagger: '2.0'
+info:
+  title: Wallet API
+  version: '1.0'
+host: localhost:8000
+schemes:
+  - http
+paths:
+  /api/wallet/balance/{user}:
+    get:
+      summary: Get the balance of a user's wallet
+      parameters:
+        - name: user
+          in: path
+          description: ID of the user to get the wallet balance for
+          required: true
+          type: integer
+      responses:
+        '200':
+          description: A JSON object containing the balance
+          schema:
+            type: object
+            properties:
+              balance:
+                type: integer
+  /api/wallet/deposit/{user}:
+    post:
+      summary: Deposit money into a user's wallet
+      parameters:
+        - name: user
+          in: path
+          description: ID of the user to deposit money to
+          required: true
+          type: integer
+        - name: amount
+          in: body
+          description: Amount to deposit
+          required: true
+          schema:
+            type: object
+            properties:
+              amount:
+                type: integer
+      responses:
+        '200':
+          description: A JSON object containing the transaction reference ID
+          schema:
+            type: object
+            properties:
+              reference_id:
+                type: integer
