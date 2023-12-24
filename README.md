@@ -1,4 +1,5 @@
 ## Wallet API
+
 Wallet API is a Dockerized Laravel application for managing user wallets and transactions.
 
 ### Prerequisites
@@ -44,7 +45,15 @@ Wallet API is a Dockerized Laravel application for managing user wallets and tra
    docker-compose exec app php artisan migrate --seed
    ```
 
-7. **Access the Application:**
+7. **Set Up Scheduled Tasks:**
+
+   Add the following Cron entry to your server to start the Laravel scheduler:
+
+   ```bash
+   ***** cd /project-path && docker-compose exec app php artisan schedule:run >> /path/logs/scheduled-jobs.log 2>&1
+   ```
+
+8. **Access the Application:**
 
    Visit [http://localhost:8000](http://localhost:8000) in your web browser to access the Wallet API application.
 
@@ -69,7 +78,11 @@ The application offers two API endpoints:
     - The `{user}` parameter should be replaced with the ID of the user.
     - The request body should be a JSON object containing an `amount` field.
 
-For a complete documentation of the API, please refer to the swagger.yml file in the root directory of the project.
+- **GetTotalAmount:** To get the total amount, run this command:
+   ```shell
+    docker-compose exec app php artisan transactions:total
+   ```
+For complete documentation of the API, please refer to the [swagger](./swagger.yml).
 
 ### Continuous Integration (CI)
 
