@@ -19,7 +19,6 @@ class WalletService implements WalletServiceContract
     {
         return DB::transaction(static function () use ($user, $amount) {
             $transaction = $user->transactions()->create([
-                'user_id' => $user->id,
                 'amount'  => $amount,
             ]);
             $user->wallet->balance += $amount;
