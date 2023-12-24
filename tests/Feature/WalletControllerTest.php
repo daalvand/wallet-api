@@ -69,6 +69,19 @@ class WalletControllerTest extends TestCase
         ]);
     }
 
+    public function test_deposit_request_with_insufficient_balance(): void
+    {
+        $user = User::factory()->create();
+        $user->wallet->update(['balance' => 100]);
+
+        $response = $this->postJson(route('wallet.deposit', ['user' => $user]), [
+            'amount' => -200,
+        ]);
+
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors(['amount' => 'The amount field must be greater than or equal to -100.']);
+    }
+
     public function testDepositMoneyValidation(): void
     {
         $user = User::factory()->create();

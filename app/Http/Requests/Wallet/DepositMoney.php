@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Wallet;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class DepositMoney extends FormRequest
 {
@@ -21,8 +22,11 @@ class DepositMoney extends FormRequest
      */
     public function rules(): array
     {
+        $currentBalance = $this->route('user')->wallet->balance;
         return [
-            'amount' => 'required|int',
+            'amount' => [
+                'required', 'integer', 'gte:' . -$currentBalance,
+            ],
         ];
     }
 }
