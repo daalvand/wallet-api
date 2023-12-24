@@ -16,4 +16,11 @@ class Wallet extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function updateBalance(int $amount): self
+    {
+        $this->balance += $amount;
+        $this->save();
+        return $this;
+    }
 }

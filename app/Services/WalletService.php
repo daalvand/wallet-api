@@ -18,11 +18,8 @@ class WalletService implements WalletServiceContract
     public function depositMoney(User $user, int $amount): int
     {
         return DB::transaction(static function () use ($user, $amount) {
-            $transaction = $user->transactions()->create([
-                'amount'  => $amount,
-            ]);
-            $user->wallet->balance += $amount;
-            $user->wallet->save();
+            $transaction = $user->transactions()->create(['amount' => $amount]);
+            $user->wallet->updateBalance($amount);
             return $transaction->id;
         });
     }

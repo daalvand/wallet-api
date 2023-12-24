@@ -15,7 +15,12 @@ class WalletControllerTest extends TestCase
 
     public function testShowBalance(): void
     {
-        $user = User::factory()->has(Wallet::factory(['balance' => 5000]))->create();
+        $user = User::factory()->create();
+        $response = $this->getJson(route('wallet.balance', ['user' => $user->id]));
+        $response->assertStatus(Response::HTTP_OK);
+        $response->assertJson(['balance' => 0]);
+
+        $user->wallet->updateBalance(5000);
         $response = $this->getJson(route('wallet.balance', ['user' => $user->id]));
         $response->assertStatus(Response::HTTP_OK);
         $response->assertJson(['balance' => 5000]);
@@ -29,17 +34,14 @@ class WalletControllerTest extends TestCase
 
     public function testDepositMoney(): void
     {
-        $user = User::factory()->has(Wallet::factory(['balance' => 5000]))->create();
+        $user = User::factory()->create();
         $response = $this->postJson(route('wallet.deposit', ['user' => $user->id]), ['amount' => 1000]);
 
         $response->assertStatus(Response::HTTP_OK);
-        $response->assertJsonStructure([
-            'reference_id'
-        ]);
+        $response->assertJson(['reference_id' => Transaction::first()->id]);
 
         $this->assertDatabaseCount(Transaction::class, 1);
         $this->assertDatabaseCount(Wallet::class, 1);
-
 
         $this->assertDatabaseHas(Transaction::class, [
             'user_id' => $user->id,
@@ -47,13 +49,29 @@ class WalletControllerTest extends TestCase
         ]);
         $this->assertDatabaseHas(Wallet::class, [
             'user_id' => $user->id,
-            'balance' => 6000,
+            'balance' => 1000,
+        ]);
+
+        $response = $this->postJson(route('wallet.deposit', ['user' => $user->id]), ['amount' => 500]);
+        $response->assertStatus(Response::HTTP_OK);
+        $response->assertJson(['reference_id' => Transaction::latest('id')->first()->id]);
+        $this->assertDatabaseCount(Transaction::class, 2);
+        $this->assertDatabaseCount(Wallet::class, 1);
+
+
+        $this->assertDatabaseHas(Transaction::class, [
+            'user_id' => $user->id,
+            'amount'  => 500,
+        ]);
+        $this->assertDatabaseHas(Wallet::class, [
+            'user_id' => $user->id,
+            'balance' => 1500,
         ]);
     }
 
     public function testDepositMoneyValidation(): void
     {
-        $user = User::factory()->has(Wallet::factory(['balance' => 5000]))->create();
+        $user = User::factory()->create();
 
         //required
         $response = $this->postJson(route('wallet.deposit', ['user' => $user->id]));
