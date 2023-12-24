@@ -22,7 +22,7 @@ class DepositMoney extends FormRequest
     public function rules(): array
     {
         return [
-            'amount' => 'required|int|gt:0',
+            'amount' => 'required|int',
         ];
     }
 }

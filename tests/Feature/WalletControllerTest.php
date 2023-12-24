@@ -52,7 +52,7 @@ class WalletControllerTest extends TestCase
             'balance' => 1000,
         ]);
 
-        $response = $this->postJson(route('wallet.deposit', ['user' => $user->id]), ['amount' => 500]);
+        $response = $this->postJson(route('wallet.deposit', ['user' => $user->id]), ['amount' => -500]);
         $response->assertStatus(Response::HTTP_OK);
         $response->assertJson(['reference_id' => Transaction::latest('id')->first()->id]);
         $this->assertDatabaseCount(Transaction::class, 2);
@@ -61,11 +61,11 @@ class WalletControllerTest extends TestCase
 
         $this->assertDatabaseHas(Transaction::class, [
             'user_id' => $user->id,
-            'amount'  => 500,
+            'amount'  => -500,
         ]);
         $this->assertDatabaseHas(Wallet::class, [
             'user_id' => $user->id,
-            'balance' => 1500,
+            'balance' => 500,
         ]);
     }
 
@@ -82,11 +82,6 @@ class WalletControllerTest extends TestCase
         $response = $this->postJson(route('wallet.deposit', ['user' => $user->id]), ['amount' => 'not an integer']);
         $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
         $response->assertJsonValidationErrors(['amount' => 'The amount field must be an integer.']);
-
-        //greater than zero
-        $response = $this->postJson(route('wallet.deposit', ['user' => $user->id]), ['amount' => -1000]);
-        $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
-        $response->assertJsonValidationErrors(['amount' => 'The amount field must be greater than 0.']);
     }
 
     public function testDepositMoneyUserNotFound(): void
