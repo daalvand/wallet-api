@@ -62,6 +62,7 @@ Wallet API is a Dockerized Laravel application for managing user wallets and tra
 To run the application tests, execute the following command:
 
 ```bash
+touch database/database.sqlite
 docker-compose exec app php artisan test
 ```
 
